@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N-Queens Visualizer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .header .crown-icon {
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
+            to { text-shadow: 0 0 30px rgba(255, 255, 255, 0.8); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .controls-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-group {
+            margin-bottom: 2rem;
+        }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: #ffffff;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .input-label {
+            position: absolute;
+            left: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            background: transparent;
+            padding: 0 0.5rem;
+        }
+
+        .input-field:focus + .input-label,
+        .input-field:valid + .input-label {
+            top: 0;
+            font-size: 0.9rem;
+            color: #ffffff;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+        }
+
+        .speed-control {
+            margin-bottom: 2rem;
+        }
+
+        .speed-label {
+            display: block;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .slider-container {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .speed-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            position: relative;
+        }
+
+        .speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .speed-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .speed-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .play-button {
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+            color: #000000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 0 auto;
+            min-width: 150px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .play-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .play-button:active {
+            transform: translateY(0);
+        }
+
+        .play-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .solutions-count {
+            font-size: 1.2rem;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .boards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .board-wrapper {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .board-wrapper:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .board-title {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #ffffff;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        .chess-board {
+            display: grid;
+            gap: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 8px;
+            margin: 0 auto;
+            width: fit-content;
+        }
+
+        .board-cell {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .board-cell.white {
+            background: rgba(255, 255, 255, 0.9);
+            color: #000000;
+        }
+
+        .board-cell.black {
+            background: rgba(0, 0, 0, 0.8);
+            color: #ffffff;
+        }
+
+        .board-cell.highlight {
+            background: rgba(255, 255, 255, 0.3) !important;
+            transform: scale(1.1);
+        }
+
+        .board-cell.conflict {
+            background: rgba(255, 100, 100, 0.6) !important;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-3px); }
+            75% { transform: translateX(3px); }
+        }
+
+        .queen-icon {
+            font-size: 1.8rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 1s ease-in-out infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: rgba(255, 100, 100, 0.2);
+            border: 1px solid rgba(255, 100, 100, 0.5);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            color: #ffffff;
+            text-align: center;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .boards-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .board-cell {
+                width: 35px;
+                height: 35px;
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>
+            N-Queens Visualizer
+            <i class="fas fa-crown crown-icon"></i>
+        </h1>
+    </header>
+
+    <div class="container">
+        <div class="controls-panel">
+            <div class="input-group">
+                <div class="input-container">
+                    <input type="number" class="input-field" id="queensCount" min="1" max="8" required>
+                    <label class="input-label">Number of Queens</label>
+                </div>
+                
+                <div class="speed-control">
+                    <label class="speed-label">Animation Speed</label>
+                    <div class="slider-container">
+                        <input type="range" class="speed-slider" id="speedSlider" min="1" max="100" value="50">
+                        <div class="speed-labels">
+                            <span>Slow</span>
+                            <span>Fast</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="play-button" id="startButton">
+                    <i class="fas fa-play"></i>
+                    Start Visualization
+                </button>
+            </div>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        
+        <div class="info-panel" id="infoPanel" style="display: none;">
+            <div class="solutions-count" id="solutionsCount"></div>
+        </div>
+        
+        <div class="loading-spinner" id="loadingSpinner"></div>
+        
+        <div class="boards-container" id="boardsContainer"></div>
+    </div>
+
+    <script>
+        class NQueensVisualizer {
+            constructor() {
+                this.queensCount = 0;
+                this.speed = 500;
+                this.solutions = [];
+                this.isRunning = false;
+                this.currentBoard = 0;
+                
+                this.initializeElements();
+                this.bindEvents();
+            }
+
+            initializeElements() {
+                this.queensInput = document.getElementById('queensCount');
+                this.speedSlider = document.getElementById('speedSlider');
+                this.startButton = document.getElementById('startButton');
+                this.errorMessage = document.getElementById('errorMessage');
+                this.infoPanel = document.getElementById('infoPanel');
+                this.solutionsCount = document.getElementById('solutionsCount');
+                this.loadingSpinner = document.getElementById('loadingSpinner');
+                this.boardsContainer = document.getElementById('boardsContainer');
+            }
+
+            bindEvents() {
+                this.startButton.addEventListener('click', () => this.startVisualization());
+                this.speedSlider.addEventListener('input', (e) => {
+                    this.speed = 1000 - (e.target.value * 9);
+                });
+            }
+
+            showError(message) {
+                this.errorMessage.textContent = message;
+                this.errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    this.errorMessage.style.display = 'none';
+                }, 3000);
+            }
+
+            async startVisualization() {
+                const n = parseInt(this.queensInput.value);
+                
+                if (!n || n < 1 || n > 8) {
+                    this.showError('Please enter a number between 1 and 8');
+                    return;
+                }
+
+                if (this.isRunning) return;
+
+                this.queensCount = n;
+                this.solutions = [];
+                this.currentBoard = 0;
+                this.isRunning = true;
+
+                this.startButton.disabled = true;
+                this.startButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running...';
+                this.loadingSpinner.style.display = 'block';
+                this.boardsContainer.innerHTML = '';
+                this.infoPanel.style.display = 'none';
+
+                await this.solveNQueens();
+                
+                this.loadingSpinner.style.display = 'none';
+                this.startButton.disabled = false;
+                this.startButton.innerHTML = '<i class="fas fa-play"></i> Start Visualization';
+                this.isRunning = false;
+
+                this.displayResults();
+            }
+
+            async solveNQueens() {
+                const board = Array(this.queensCount).fill().map(() => Array(this.queensCount).fill(0));
+                await this.solve(board, 0);
+            }
+
+            async solve(board, row) {
+                if (row === this.queensCount) {
+                    this.solutions.push(board.map(row => [...row]));
+                    return;
+                }
+
+                for (let col = 0; col < this.queensCount; col++) {
+                    if (await this.isSafe(board, row, col)) {
+                        board[row][col] = 1;
+                        await this.solve(board, row + 1);
+                        board[row][col] = 0;
+                    }
+                }
+            }
+
+            async isSafe(board, row, col) {
+                // Check column
+                for (let i = 0; i < row; i++) {
+                    if (board[i][col] === 1) return false;
+                }
+
+                // Check diagonal (top-left to bottom-right)
+                for (let i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+                    if (board[i][j] === 1) return false;
+                }
+
+                // Check diagonal (top-right to bottom-left)
+                for (let i = row - 1, j = col + 1; i >= 0 && j < this.queensCount; i--, j++) {
+                    if (board[i][j] === 1) return false;
+                }
+
+                return true;
+            }
+
+            displayResults() {
+                if (this.solutions.length === 0) {
+                    this.showError('No solutions found for this configuration');
+                    return;
+                }
+
+                this.solutionsCount.textContent = `Found ${this.solutions.length} solution${this.solutions.length > 1 ? 's' : ''} for ${this.queensCount} queens`;
+                this.infoPanel.style.display = 'block';
+
+                this.solutions.forEach((solution, index) => {
+                    this.createBoard(solution, index + 1);
+                });
+
+                // Start animation
+                this.animateSolutions();
+            }
+
+            createBoard(solution, boardNumber) {
+                const boardWrapper = document.createElement('div');
+                boardWrapper.className = 'board-wrapper';
+                
+                const boardTitle = document.createElement('div');
+                boardTitle.className = 'board-title';
+                boardTitle.textContent = `Solution ${boardNumber}`;
+                
+                const chessBoard = document.createElement('div');
+                chessBoard.className = 'chess-board';
+                chessBoard.style.gridTemplateColumns = `repeat(${this.queensCount}, 1fr)`;
+                chessBoard.id = `board-${boardNumber}`;
+                
+                for (let row = 0; row < this.queensCount; row++) {
+                    for (let col = 0; col < this.queensCount; col++) {
+                        const cell = document.createElement('div');
+                        cell.className = `board-cell ${(row + col) % 2 === 0 ? 'white' : 'black'}`;
+                        cell.dataset.row = row;
+                        cell.dataset.col = col;
+                        
+                        if (solution[row][col] === 1) {
+                            const queen = document.createElement('i');
+                            queen.className = 'fas fa-chess-queen queen-icon';
+                            cell.appendChild(queen);
+                        }
+                        
+                        chessBoard.appendChild(cell);
+                    }
+                }
+                
+                boardWrapper.appendChild(boardTitle);
+                boardWrapper.appendChild(chessBoard);
+                this.boardsContainer.appendChild(boardWrapper);
+            }
+
+            async animateSolutions() {
+                for (let i = 0; i < this.solutions.length; i++) {
+                    await this.animateBoard(i + 1);
+                    await this.delay(this.speed * 2);
+                }
+            }
+
+            async animateBoard(boardNumber) {
+                const board = document.getElementById(`board-${boardNumber}`);
+                const cells = board.querySelectorAll('.board-cell');
+                
+                cells.forEach(cell => {
+                    cell.style.opacity = '0.3';
+                });
+                
+                const queens = board.querySelectorAll('.queen-icon');
+                for (let queen of queens) {
+                    const cell = queen.parentElement;
+                    cell.style.opacity = '1';
+                    cell.classList.add('highlight');
+                    
+                    await this.delay(this.speed);
+                    
+                    cell.classList.remove('highlight');
+                }
+                
+                cells.forEach(cell => {
+                    cell.style.opacity = '1';
+                });
+            }
+
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        }
+
+        // Initialize the visualizer when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new NQueensVisualizer();
+        });
+    </script>
+</body>
+</html>
